@@ -1,7 +1,7 @@
 # Site settings
 title: Sirin Schariac
 SEOTitle: Sirin的博客 | Sirin Blog
-header-img: img/post-bg-desk.jpg
+header-img: img/Background.jpg
 email: None
 description: "Spend a lifetime to taste the love and pain"
 keyword: "HPC"
@@ -12,7 +12,7 @@ github_repo: "https://github.com/sirinschariac/sirinschariac.github.io.git" # yo
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "Who can say where the path will go"
-sidebar-avatar: /img/about-BY-gentle.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/Kiana-Summer(Squ).jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
