@@ -1,13 +1,13 @@
 {
-  "name": "BY Blog",
-  "short_name": "BY Blog",
+  "name": "Sirin-Blog",
+  "short_name": "Sirin-Blog",
   "description": "A personal blog by engineer",
   "icons": [{
-    "src": "icons/pwa_icon_128.png",
+    "src": "icons/Fx_icon_128.png",
     "sizes": "128x128",
     "type": "image/png"
   }, {
-    "src": "icons/pwa_icon_512.png",
+    "src": "icons/Fx_icon_512.png",
     "sizes": "512x512",
     "type": "image/png"
   }],
