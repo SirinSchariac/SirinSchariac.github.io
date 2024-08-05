@@ -1,5 +1,5 @@
 ---
-layout:        				    # 使用的布局（不需要改）
+layout: post  				    # 使用的布局（不需要改）
 title:       				# 标题 
 subtitle:    #副标题
 date:       2024-08-06 				# 时间
