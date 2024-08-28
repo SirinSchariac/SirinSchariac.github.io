@@ -1,0 +1,175 @@
+---
+layout: post  				    # 使用的布局（不需要改）
+title: SPECCPU2017的手册      				
+subtitle:安装，卸载，单独编译运行    
+date:       2024-08-28 				
+author:     Sirin 						
+header-img: img/YourColor.png
+catalog: true 				
+tags:						
+    - benchmarks
+    - HPC
+    - CPU
+---
+
+## SPEC Docs
+
+### Installing SPEC CPU 2017 on Unix
+
+SPEC CPU以一个iso镜像文件的方式发行
+
+<font color = blue>1.准备位置</font>
+
+首先准备一个用于下载iso镜像的位置
+
+```bash
+mkdir -p /home/USR/spec2017
+```
+
+这个目录里注意不要有空格，也不要用`$HOME`之类的环境变量或者`~`。这里的`USR`可以替换成相应的用户名。
+
+<font color = blue>2.加载镜像</font>
+
+在Linux上加载镜像
+
+```bash
+mount -t iso9660 -o ro,exec,loop cpu2017.iso /mnt
+```
+
+通过这个命令将名为 `cpu2017.iso` 以只读、可执行的方式挂载到 `/mnt` 目录下，并使用 loop 设备处理。
+
+<font color = blue>3.进入目录开始下载</font>
+
+```bash
+cd /mnt
+```
+
+```bash
+./install.sh
+```
+
+执行下载指令后，会需要指定下载目录
+
+输入之前创建的目录即可
+
+```bash
+SPEC CPU2017 Installation
+
+Top of the CPU2017 tree is '/mnt'
+Enter the directory you wish to install to (e.g. /usr/cpu2017)
+/home/USR/spec2017
+```
+
+<font color = blue>4.设置Path</font>
+
+进入到SPEC的下载目录，使用source指令启用shrc
+
+```bash
+source shrc
+```
+
+<font color = blue>Plus:卸载SPEC</font>
+
+```bash
+rm -Rf /home/USR/spec2017
+```
+
+
+
+### Avoid runcpu
+
+该部分用于说明如何对SPEC提供的benchmark进行更加自主化的运行，而不使用SPEC提供的各类套件。
+
+以一个比较小型的benchmark为例——`519.lbm_r`来说明，同时需要一个config文件，在`$SPEC/config`里面可以找到各类示例用的config文件，每个文件里的config都描述了相应的环境。
+
+首先需要进行一次fake run来构建相应的运行目录，这里以`Example-gcc-macos-x86.cfg`的config为例
+
+```bash
+$ pwd
+$ source shrc
+$ cd config
+$ cp Example-gcc-macos-x86.cfg my_test.cfg
+$ runcpu --fake --loose --size test --tune base --config my_test 519.lbm_r
+```
+
+执行完成后，terminal里会打印出这次运行的log文件，例如`CPU2017.xxx.log`
+
+进入到result文件夹里，找到相应的build dir（下面给出了grep搜索相应信息后的示例）
+
+```bash
+$ cd $SPEC/result
+$ grep build/ CPU2017.xxx.log
+Wrote to makefile '/reiner/cpu2017/benchspec/CPU/519.lbm_r/build/build_base_mytest-m64.0000/Makefile.deps':
+Wrote to makefile '/reiner/cpu2017/benchspec/CPU/519.lbm_r/build/build_base_mytest-m64.0000/Makefile.spec':
+```
+
+然后进入到上面给出的目录里生成可执行程序
+
+```bash
+$ cd build_base_mytest-m64.0000/
+$ specmake clean
+$ specmake
+```
+
+此时可能会报错说`gcc:Command not found`，这时候需要使用`SPECLANG`项来覆写指定相应gcc编译器
+
+```bash
+$ which gcc
+/USR/bin/gcc
+$ specmake SPECLANG=/USR/bin/
+```
+
+接着找到run目录，把二进制文件复制过去
+
+```bash
+$ go result
+/USR/cpu2017/result
+$ grep 'Setting up' CPU2017.xxx.log
+Setting up environment for running 519.lbm_r...
+  Setting up 519.lbm_r test base mytest-m64 (1 copy): run_base_test_mytest-m64.0000
+$ go 519.lbm run
+/USR/cpu2017/benchspec/CPU/519.lbm_r/run
+$ cd run_base_test_mytest-m64.0000
+$ cp ../../build/build_base_mytest-m64.0000/lbm_r .
+```
+
+运行可以通过`specinvoke`来执行，也可以直接通过命令行运行相应的二进制文件
+
+```bash
+$ go 519.lbm run run_base_test_mytest-m64.0000
+/USR/cpu2017/benchspec/CPU/519.lbm_r/run/run_base_test_mytest-m64.0000
+$ cp ../../build/build_base_mytest-m64.0000/lbm_r
+$ specinvoke -n
+```
+
+命令行运行：
+
+```bash
+$ ./lbm_r 20 reference.dat 0 1 100_100_130_cf_a.of 0<&- > lbm.out 2>> lbm.err
+```
+
+这一命令可以通过log文件找到
+
+```bash
+$ go result
+/reiner/cpu2017/result
+$ grep -n %% CPU2017.007.log | grep benchmark_run
+498:%% Fake commands from benchmark_run (/reiner/cpu2017/bin/spe...):
+605:%% End of fake output from benchmark_run (/reiner/cpu2017/bin/spe...)
+$ head -605 CPU2017.007.log | tail -4
+cd /reiner/cpu2017/benchspec/CPU/519.lbm_r/run/run_base_test_mytest-m64.0000
+../run_base_test_mytest-m64.0000/lbm_r_base.mytest-m64 20 reference.dat 0 1 100_100_130_cf_a.of 
+   0<&- > lbm.out 2>> lbm.err
+specinvoke exit: rc=0
+%% End of fake output from benchmark_run (/reiner/cpu2017/bin/spe...)
+$  
+```
+
+这里查看了log中`%% End of fake output from benchmark_run`的位置，这里位于605行。接着从log文件中读取这605行，选出最后4行显示，其中就包含了命令行的参数。
+
+运行完成后，尽量把`build`和`run`文件夹里的内容保存到别的地方，避免被清除或者丢失。
+
+
+
+
+
