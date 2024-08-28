@@ -1,7 +1,7 @@
 ---
 layout: post  				    # 使用的布局（不需要改）
 title: SPECCPU2017的手册      				
-subtitle:安装，卸载，单独编译运行    
+subtitle: 安装，卸载，单独编译运行    
 date:       2024-08-28 				
 author:     Sirin 						
 header-img: img/YourColor.png
