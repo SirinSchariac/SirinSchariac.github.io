@@ -12,7 +12,7 @@ github_repo: "https://github.com/sirinschariac/sirinschariac.github.io.git" # yo
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "Like Tears in The Rain"
-sidebar-avatar: /img/Kiana-Summer(Squ).jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/Mei_Work.JPG      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
