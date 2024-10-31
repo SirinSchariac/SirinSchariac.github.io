@@ -24,7 +24,7 @@ tags:
 
 CSR格式是一种被广泛用于表示稀疏矩阵的方法。
 
-![CSR Format](../img/PPoPP-Rode/CSR.png)
+![CSR.png](https://s2.loli.net/2024/10/31/qewLidsKOnE5U97.png)
 
 对于CSR格式，其一共使用三个数组来表示系数矩阵的信息，以图中信息为例
 
@@ -61,11 +61,7 @@ for(int i = 0; i < M; i++)//row index从0到M-1，row_ptr[M]是通过i+1(i=M-1�
 **SDDMM**
 
 Sampled Dense-Dense Matrix Multiplication	采样稠密-稠密矩阵乘法
-$$
-给定稠密矩阵X_1\in\R^{n_1\times d}和X_2\in\R^{d\times n_2}和一个稀疏矩阵S\in\R^{n_1\times n_2}\\
-SDDMM即为(X_1\otimes X_2)\odot A\\
-其中\otimes 表示矩阵乘法\quad \odot 表示逐元素乘法
-$$
+
 SpMM和SDDMM在图神经网络中都有应用，因为GNN中邻接矩阵往往是稀疏的，而特征矩阵是稠密的。同样的稀疏矩阵在科学计算中也有应用，例如LOBPCG和iterative solvers with multiple right-hand sides。
 
 ```c++
@@ -97,7 +93,7 @@ for(int i = 0; i < M; i++)
 
 #### <font color = blue font size = 5>非0元素分布的研究</font>
 
-![Nonzeros Distribution](../img/PPoPP-RoDe/nonzerosdistribution.png "SuiteSparse上的非零元素分布")
+![NonzerosDistribution.png](https://s2.loli.net/2024/10/31/AzURiIbKMJ7gOXF.png)
 
 在SuiteSparse上进行统计
 
@@ -113,13 +109,13 @@ for(int i = 0; i < M; i++)
 
 #### <font color = blue font size = 5>SpMM流水线</font>
 
-![Common Pipeline](../img/PPoPP-RoDe/commonPipeline.png)
+![CommonPipeline.png](https://s2.loli.net/2024/10/31/AbVFc9fDEG5tIdN.png)
 
 Sync存在的原因：To enable the reuse of sparse blocks among threads
 
 #### <font color = blue font size = 5>RoDe</font>
 
-![Overview](../img/PPoPP-RoDe/overview.png)
+![Overview.png](https://s2.loli.net/2024/10/31/qW2Ii13uBV4gdfS.png)
 
 RoDe方法首先将稀疏矩阵的每一行分为block part和residual part，之后通过block split方法对block part进行划分以实现负载均衡，最后通过构建sub-block pipeline在连续的同步操作之间实现更多操作以更好地掩盖访存开销。
 
@@ -128,49 +124,48 @@ RoDe方法首先将稀疏矩阵的每一行分为block part和residual part，�
 行分解首先是将每一行分解为若干个block part，每个block part含有32的整数倍个非0元素(32即一个warp内的线程数)。如下图的例子所示，所有满足这一大小的块被放入到(a)代表的block part中，少于32元素的则被放入residual part中。并用两个数组来记录相关信息，`Row Indices[]`负责记录当前这一块是属于哪一行的；`Start Offsets`记录了该part的首个元素在原本的若干行中的位置，例如对于residual part #2，其原本的位置应该是#0长度+#1长度+#2的block_part长度，即24+32+32*3=152。
 
 相应的计算可以如下表示
-$$
-For\;(a)\\
-Start\_Offsets_{(a)}[i]=row\_ptr[Row\_Indices_{(a)}[i]]\\
-For\;(b)\\
-Let\; r\_idx=Row\_Indices_{(b)}[i]\quad N_B=32\\
-Start\_Offsets_{(b)}[i]=row\_ptr[r\_idx+1]-(row\_ptr[r\_idx+1]-row\_ptr[r\_idx])\%N_{B}
-$$
+```
+For (a)\\
+Start_Offsets_(a)[i]=row_ptr[Row_Indices_(a)[i]]
+For (b)\\
+Let r_idx=Row_Indices_(b)[i] N_B=32\\
+Start_Offsets_(b)[i]=row_ptr[r_idx+1]-(row_ptr[r_idx+1]-row_ptr[r_idx])%N_{B}
+```
 第二个算式比较复杂，这里结合例子来说明，比如对于#2的(b)部分来说，后半部分括号内的算式实际上就是`row_ptr[3]-row_ptr[2]`，那么结合CSR中`row_ptr`的含义，这个式子实际上算的就是原本#2整行里面的非0元素数，即104，104%32=8，实际上就是#2的residual part的元素数，而前半部分`row_ptr[3]`实际上反映了前三行(即#0 #1 #2)总的非0元素数，即23+32+104=160，前三行总的元素数减去#2的residual part里面的元素数，自然就是#2 residual中首个元素在原本所有元素中的offset了，即160-8=152。
 
-![Example](../img/PPoPP-RoDe/RoDeExample.png)
+![RoDeExample.png](https://s2.loli.net/2024/10/31/aN9C4gWmP7OrZ56.png)
 
 ##### Block Split
 
 非零元素分布的特征2和特征3表明，同一个矩阵的不同行长度可能会存在较大的差异，因此，需要保证负载均衡。因此，对于row decomposition后的Block part还需要进一步的划分。
 
-![](../img/PPoPP-RoDe/blocksplit.png)
+![blocksplit.png](https://s2.loli.net/2024/10/31/u5HROZ2FXbNSnKa.png)
 
 这里每个block part又按照Ns的固定大小被划分为若干块，每块都有对应的`Row Indices`来说明它们原本属于哪一行，`Start Offsets`则用于说明这一块的首个元素的Index，例如对于#2的第二块，其offset就是#0长度+#1长度+#2的第一块长度，即`24+32+32=88`。
 
 之后这些块都被当作单独的一行进行处理，原本属于同一行的块通过`atomicAdd`指令获取结果。尽管`atomicAdd`会引发额外的开销，通过调整Ns的大小，可以实现比较好的负载均衡折中(实际应用中将Ns设定为512)。
 
 该部分相关计算如下所示
-$$
-thread \; index=t\_idx\\
-N_B=32\quad N_S=512\\
-\begin{align}
-&rowLen=row\_ptr[t\_idx+1]-row\_ptr[t\_idx]\\
-&n_{res}=rowLen\% N_B>0\quad  //res部分数量\\
-&n_{blk} = \lfloor\frac{rowLen}{N_S}\rfloor+(rowLen>N_B)\quad //block部分数量\\
-&N_{res} = prefixSum(n_{res})\quad //res部分数组标记序数\\
-&N_{blk} = prefixSum(n_{blk})\quad //block部分数组标记序数\\
-&if\; n_{res}>0:Row\_Indices_{res}[N_{res}]=t\_idx\\
-&for\;i=0\;to\;N_{blk}:\\
-&\quad Row\_Indices_{blk}[N_{blk}+i]=t\_idx\\
-&\quad Start\_Offsets_{blk}[N_{blk}+i]=row\_ptr[t\_idx]+i\times N_S
-\end{align}
-$$
+```
+thread index=t_idx
+N_B=32 N_S=512
+rowLen = row_ptr[t_idx+1]-row_ptr[t_idx]
+n_{res}=rowLen % N_B >0  //res部分数量
+n_{blk} = floor(rowLen / N_S)+(rowLen > N_B) //block部分数量
+N_{res} = prefixSum(n_{res}) //res部分数组标记序数
+N_{blk} = prefixSum(n_{blk}) //block部分数组标记序数
+if n_{res} > 0 
+	Row_Indices_{res}[N_{res}]=t_idx
+for i=0 to N_{blk}:
+	Row_Indices_{blk}[N_{blk}+i]=t_idx
+	Start_Offsets_{blk}[N_{blk}+i]=row_ptr[t_idx]+i * N_S
+```
 
 ##### Sub-block Pipeline
 
 在前图所示的传统的load-computation pipeline中，访问global memory会带来较大的开销。Sub-block pipeline方法的作用就在于更好的重叠shared memory访问、global memory访问和计算。该方法的principle很简单，就是在高延迟的访存进行时，尽可能的issue更多的指令或者进行更多计算。
 
-![](../img/PPoPP-RoDe/subblockpipeline.png)
+![subblockpipeline.png](https://s2.loli.net/2024/10/31/oAUWsIKwrc26ln1.png)
 
 为了提升数据重用性，Sparse blocks被加载进shared memory中，而dense blocks的列向量则直接加载到每个线程的寄存器中，累计计算结果也是存储在寄存器中。因为load sparse block的时候需要使用`col_idx`来获取相应的dense block中的行，因此在load dense block之前必须进行一次同步，保证所有线程都获取到了`col_idx`的值。
 
@@ -178,13 +173,13 @@ $$
 
 #### <font color = blue font size = 5>SpMM Kernel实现</font>
 
-![](../img/PPoPP-RoDe/SpMMKernel.png)
+![SpMMKernel.png](https://s2.loli.net/2024/10/31/kUx6TLPBcdOAKgr.png)
 
 上图中的两种深色部分表示每个thread block每次计算的部分。颜色更深的那种代表了一次sparse block part与dense block part的相乘计算，即sparse的一行的一部分去依次乘以dense的好几个列，得到相应的结果。
 
 ##### Block part的计算实现
 
-![](../img/PPoPP-RoDe/SpMMBlock.png)
+![SpMMblock.png](https://s2.loli.net/2024/10/31/kLe3Pt9METxcaKC.png)
 
 1-3行：计算分块索引并进行thread mapping
 
@@ -196,7 +191,7 @@ $$
 
 ##### Residual part的计算实现
 
-![](../img/PPoPP-RoDe/SpMMresidual.png)
+![SpMMresidual.png](https://s2.loli.net/2024/10/31/kgSnRBE8iVDsJZz.png)
 
 7-17行利用了Sputnik中的residue unroll技术
 
@@ -204,16 +199,17 @@ $$
 
 #### <font color = blue font size = 5>SDDMM Kernel实现</font>
 
-![](../img/PPoPP-RoDe/SDDMMblock.png)
+![SDDMMblock.png](https://s2.loli.net/2024/10/31/WsEuNr1ycLFBOfv.png)
 
 SDDMM的逻辑大部分都与SpMM相同，不同处：
-$$
-in\;B_1\;each\;thread\;loads\; \frac{kBlockItemK}{\#threadsOfSubwarp}\;elements\\
-in\;B_2\;each\;thread\;loads\;kBlockItemX\times\frac{kBlockItemK}{\#threadsOfSubwarp}\;elements
-$$
+```
+in B_1 each thread loads  kBlockItemK / #threadsOfSubwarp elements
+in B_2 each thread loads kBlockItemX * kBlockItemK / #threadsOfSubwarp elements
+```
 两种loads是以交错方式进行的，以合并内存访问，因此最终需要用shuffle指令来交换和归约线程之间的结果，相应的实现如下图所示。
 
-![](../img/PPoPP-RoDe/SDDMMkernel.png)
+
+![SDDMMkernel.png](https://s2.loli.net/2024/10/31/ibcVdRCWNhSYlt8.png)
 
 #### <font color = blue font size = 5>总结</font>
 
