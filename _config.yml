@@ -3,7 +3,7 @@ title: Sirin Schariac
 SEOTitle: Sirin的博客 | Sirin Blog
 header-img: img/Background.jpg
 email: None
-description: "Spend a lifetime to taste the love and pain"
+description: "Just like tears in rain..."
 keyword: "HPC"
 url: "http://sirinschariac.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
@@ -19,9 +19,6 @@ sidebar-avatar: /img/Mei_Work.JPG      # use absolute URL, seeing it's used in b
 # SNS settings
 RSS: false
 github_username:    SirinSchariac
-
-
-
 
 # Build settings
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
