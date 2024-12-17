@@ -121,7 +121,7 @@ RoDe方法首先将稀疏矩阵的每一行分为block part和residual part，�
 
 ##### Row Decomposition
 
-行分解首先是将每一行分解为若干个block part，每个block part含有32的整数倍个非0元素(32即一个warp内的线程数)。如下图的例子所示，所有满足这一大小的块被放入到(a)代表的block part中，少于32元素的则被放入residual part中。并用两个数组来记录相关信息，`Row Indices[]`负责记录当前这一块是属于哪一行的；`Start Offsets`记录了该part的首个元素在原本的若干行中的位置，例如对于residual part #2，其原本的位置应该是#0长度+#1长度+#2的block_part长度，即24+32+32*3=152。
+行分解首先是将每一行分解为若干个block part，每个block part含有32的整数倍个非0元素(32即一个warp内的线程数)。如下图的例子所示，所有满足这一大小的块被放入到(a)代表的block part中，少于32元素的则被放入residual part中。并用两个数组来记录相关信息，`Row Indices[]`负责记录当前这一块是属于哪一行的；`Start Offsets`记录了该part的首个元素在原本的若干行中的位置，例如对于residual part #2，其原本的位置应该是#0长度+#1长度+#2的block_part长度，即$24+32+32\times 3=152$ 。
 
 相应的计算可以如下表示
 ```
