@@ -35,10 +35,9 @@ And this convolving procedure can be repeated with different filters to generate
 - *padding*
 
 Here we notice that convolution operation will shrink the size of the image
-$$
-H' = H - K_h+1\\
-W'=W-K_w+1
-$$
+
+$H' = H - K_h+1$, $W'=W-K_w+1$
+
 Thus *Padding* is introduced to fix this problem by adding extra 0 around the image.
 
 ```
@@ -67,10 +66,7 @@ The solution is simple : Downsample inside the network.
 
 In each step, the kernels move more than 1 pixels. Generally, if the Input size is `W * W`, the Filter is 
 
-`K*K`, the padding size is `P` and the stride is `S`, then the output size will be :
-$$
-\frac{W-K+2P}{S}+1
-$$
+`K*K`, the padding size is `P` and the stride is `S`, then the output size will be : $\frac{W-K+2P}{S}+1$
 
 > #### Pooling Layer
 
@@ -113,17 +109,17 @@ $\mu_j$ is the per-channel mean, shape is $(D,)$
 $\sigma_j$ is the per-channel std, shape is $(D,)$
 
 $\hat{x}_{i,j}$ is the normalized input, shape is $N\times D$
-$$
-\mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j}\\
-\sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2\\
-\hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}}
-$$
+
+$\mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j}$
+
+$\sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2$
+
+$\hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}}$
+
 However, there is a problem : zero-mean, unit variance --- too hard as a constraint.
 
-So in pratice we use learnable scale and shift parameter $\gamma,\beta$ with shape $(D,)$ for output
-$$
-y_{i,j} = y_j\hat{x}_{i,j}+\beta_j
-$$
+So in pratice we use learnable scale and shift parameter $\gamma,\beta$ with shape $(D,)$ for output $y_{i,j} = y_j\hat{x}_{i,j}+\beta_j$
+
 There is another problem: during testing, the data in a batch may not be accessible simultaneously!
 
 So in test-time, $\mu_j$ and $\sigma_j^2$ will be **the average of values seen during training**.
@@ -178,10 +174,8 @@ When the network goes deeper, the training process can become more difficult due
 
 Thus, ResNet proposed the *Residual Block*.
 
-Instead of learning the direct mapping from input $x$ to output $H(x)$, the network learns the **residual mapping** $F(x)$, which we have
-$$
-H(x) = F(x) +x
-$$
+Instead of learning the direct mapping from input $x$ to output $H(x)$, the network learns the **residual mapping** $F(x)$, which we have $H(x) = F(x) +x$
+
 ![Lec7-ResBlock.png](https://s2.loli.net/2025/02/28/zEO15SqVeim8ylh.png)
 
 Note that ReLU after residual cannot actually learn identity function since the outputs are non-netgative. But ReLU inside residual can learn true identity function by setting conv weights to 0.
