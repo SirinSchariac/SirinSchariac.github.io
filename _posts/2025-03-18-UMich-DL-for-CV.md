@@ -40,7 +40,9 @@ But : Very long sequence takes a lot of memory $\rightarrow$ Use chunks of the s
 
 Image $\rightarrow$ CNN $\rightarrow$ RNN
 
-**Transfer learning** : Take CNN trained on ImageNet and chop off the last FC layer. In RNN, we'll have $ h_t = tanh(W_{xh}*x+W_{hh}*h_{t-1}) + W_{ih}*v $, Here $ v $ represents the feature extracted by the CNN. 
+**Transfer learning** : Take CNN trained on ImageNet and chop off the last FC layer. In RNN, we'll have $ h_t = tanh(W_{xh}*x+W_{hh}*h_{t-1}) + W_{ih}*v $. 
+
+Here $ v $ represents the feature extracted by the CNN. 
 
 ![Lec-12-Captioning.png](https://s2.loli.net/2025/03/18/eFLwvmlGr6PkpI4.png)
 
