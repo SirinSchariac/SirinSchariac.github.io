@@ -34,11 +34,7 @@ And this convolving procedure can be repeated with different filters to generate
 
 - *padding*
 
-Here we notice that convolution operation will shrink the size of the image
-
-$H' = H - K_h+1$, $W'=W-K_w+1$
-
-Thus *Padding* is introduced to fix this problem by adding extra 0 around the image.
+Here we notice that convolution operation will shrink the size of the image $H' = H - K_h+1$, $W'=W-K_w+1$ Thus *Padding* is introduced to fix this problem by adding extra 0 around the image.
 
 ```
 1 2
@@ -110,15 +106,15 @@ $\sigma_j$ is the per-channel std, shape is $(D,)$
 
 $\hat{x}_{i,j}$ is the normalized input, shape is $N\times D$
 
-$\mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j}$
+the mean $\mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j}$
 
-$\sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2$
+the std $\sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2$
 
-$\hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}}$
+the normalized input $\hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}}$
 
 However, there is a problem : zero-mean, unit variance --- too hard as a constraint.
 
-So in pratice we use learnable scale and shift parameter $\gamma,\beta$ with shape $(D,)$ for output $y_{i,j} = y_j\hat{x}_{i,j}+\beta_j$
+So in pratice we use learnable scale and shift parameter $\gamma,\beta$ with shape $(D,)$ for output $y_{i,j} = y_j\hat{x}_{i,j}+\beta_j$.
 
 There is another problem: during testing, the data in a batch may not be accessible simultaneously!
 
@@ -174,7 +170,7 @@ When the network goes deeper, the training process can become more difficult due
 
 Thus, ResNet proposed the *Residual Block*.
 
-Instead of learning the direct mapping from input $x$ to output $H(x)$, the network learns the **residual mapping** $F(x)$, which we have $H(x) = F(x) +x$
+Instead of learning the direct mapping from input $x$ to output $H(x)$, the network learns the **residual mapping** $F(x)$, which we have $H(x) = F(x) +x$.
 
 ![Lec7-ResBlock.png](https://s2.loli.net/2025/02/28/zEO15SqVeim8ylh.png)
 
