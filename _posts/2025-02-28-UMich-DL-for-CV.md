@@ -106,11 +106,12 @@ $\sigma_j$ is the per-channel std, shape is $(D,)$
 
 $\hat{x}_{i,j}$ is the normalized input, shape is $N\times D$
 
-the mean $ \mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j} $.
+$$
+\mu_j = \frac{1}{N}\sum_{i=1}^{N}x_{i,j} \\
+\sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2 \\
+\hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}}\\
+$$
 
-the std $ \sigma^2_j =  \frac{1}{N}\sum_{i=1}^{N}(x_{i,j}-\mu_j)^2 $.
-
-the normalized input $ \hat{x}_{i,j} = \frac{x_{i,j} - \mu_j}{\sqrt{\sigma_j^2+\epsilon}} $.
 
 However, there is a problem : zero-mean, unit variance --- too hard as a constraint.
 
