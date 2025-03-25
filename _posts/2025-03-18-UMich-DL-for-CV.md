@@ -50,7 +50,9 @@ Here $ v $ represents the feature extracted by the CNN.
 
 #### Vanilla RNN Gradirnt Flow
 
-$h_t = tanh([W_{hh} \quad W_{hx}] \begin{bmatrix}h_{t-1}\\ x_t\end{bmatrix}) = tanh(W\begin{bmatrix}h_{t-1}\\ x_t\end{bmatrix})$
+$$
+h_t = tanh([W_{hh} \quad W_{hx}] \begin{bmatrix}h_{t-1}\\ x_t\end{bmatrix}) = tanh(W\begin{bmatrix}h_{t-1}\\ x_t\end{bmatrix})
+$$
 
 ![Lec-12-GradientFlow.png](https://s2.loli.net/2025/03/18/VDAKFOZbCI74HXu.png)
 
@@ -72,7 +74,10 @@ $o$ : <u>Output gate</u>, how much to reveal cell
 
 $g$ : <u>Gate gate</u>, how much to write to cell
 
-$\begin{bmatrix}i\\f\\o\\g\end{bmatrix}= \begin{bmatrix}\sigma \\ \sigma \\ \sigma \\ tanh\end{bmatrix}W\begin{bmatrix}h_{t-1}\\x_t\end{bmatrix}$, Here $\sigma$ is the sigmoid function $\large\sigma(x) = \frac{1}{1+e^{-x}}$
+$$
+\begin{bmatrix}i\\f\\o\\g\end{bmatrix}= \begin{bmatrix}\sigma \\ \sigma \\ \sigma \\ tanh\end{bmatrix}W\begin{bmatrix}h_{t-1}\\x_t\end{bmatrix}
+$$
+, Here $\sigma$ is the sigmoid function $\large\sigma(x) = \frac{1}{1+e^{-x}}$
 
 $c_t = f \odot c_{t-1} + i \odot g$
 
