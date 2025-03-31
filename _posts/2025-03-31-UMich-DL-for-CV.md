@@ -46,7 +46,7 @@ Now let's abstract and generalize this process for a general purpose layer.
 
 > Computations
 
-**Similarity: ** $e$, shape: $(N_X,)$, $e_i = f_{att}(q, X_i)$
+**Similarity:** $e$, shape: $(N_X,)$, $e_i = f_{att}(q, X_i)$
 
 **Attention Weights:** $a=softmax(e)$, shape: $(N_X,)$
 
@@ -115,7 +115,7 @@ Another variant is **Masked Self-Attention Layer**.
 
 For normal self-attention layer, the model can access all the input information. However, sometimes we want the model only to use the information from the past, especially for language models. 
 
-To achieve this, we can simply change the $E$ value to $-\infin$ in every position we don't want the model to pay attention to. 
+To achieve this, we can simply change the $E$ value to $-inf$ in every position we don't want the model to pay attention to. 
 
 ![Lec13-MaskedSA.png](https://s2.loli.net/2025/03/31/RIEM6yzvwst3YZr.png)
 
@@ -137,6 +137,8 @@ For **Ordered Sequences**
 
 <font color = grass>(+) Good at long sequences</font>
 
+
+
 <font color = red>(-) Not parallelizable, the hidden states need to be computed sequentially</font>
 
 
@@ -146,6 +148,8 @@ For **Ordered Sequences**
 For **Multidimensional Grids**
 
 <font color = grass>(+) Highly parallelizable, each output can be computed in parallel</font>
+
+
 
 <font color = red>(-) Bad at long sequences, need to stack many conv layers to see the whole sequence</font>
 
@@ -157,7 +161,11 @@ For **Sets of vectors**
 
 <font color = grass>(+) Good at long sequences: after one self-attention layer, each output "sees" all input</font>
 
+
+
 <font color = grass>(+) Highly parallel</font>
+
+
 
 <font color = red>(-) Memory intensive</font>
 
