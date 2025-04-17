@@ -26,6 +26,8 @@ tags:
 $$
 p(y|x)
 $$
+
+
 **生成模型Generative Model:** Learn a probability distribution $p(x)$
 
 **条件生成模型Conditional Generative Model:** Learn conditioned probability given label y
@@ -54,6 +56,8 @@ For generative models, all the images compete for probability mass. Therefore, t
 **Goal: ** find an explicit function for $p(x)=f(x,W)$
 
 Given the dataset $X(x^{(1)},x^{(2)},\dots,x^{(N)})$, train the model by solve: 
+
+
 $$
 \begin{align}
 W^*&=\arg \max_W\prod_i p(x^{(i)})\\
@@ -61,6 +65,8 @@ W^*&=\arg \max_W\prod_i p(x^{(i)})\\
 &= \arg \max_W\sum_i log\;f(x^{(i)}, W)
 \end{align}
 $$
+
+
 This will maximize the probability of training data (i.e., Maximum Likelihood Estimation)
 
 > Autoregressive Models
@@ -159,18 +165,26 @@ VAE的架构如图所示：
 $$
 \log p_{\theta}(x)= \log \frac{p_{\theta}(x|z)p(z)}{p_{\theta}(z|x)}=\log \frac{p_{\theta}(x|z)p(z)q_{\phi}(z|x)}{p_{\theta}(z|x)q_{\phi}(z|x)}\\
 $$
+
+
 然后引入期望来做替换
 $$
 =E_z[\log p_{\theta}(x|z)]-E_z[\log \frac{q_{\phi}(z|x)}{p(z)}]+E_z[\log \frac{q_{\phi}(z|x)}{p_{\theta}(z|x)}]\\
 $$
+
+
 再将后面两项替换为KL散度来表达
 $$
 =E_{z\sim q_{\phi}(z|x)}[\log p_{\theta}(x|z)]-D_{KL}(q_{\phi}(z|x),p(z))+D_{KL}(q_{\phi}(z|x),p_{\theta}(z|x))
 $$
+
+
 第一项反映的是图像重建，第二项反映的是先验分布和Encoder采样之间的KL散度，但第三项是没法计算的(之前所说的$p_{\theta}(z|x)$是无法观测的)，因为KL散度一定非负，所以可得Variantional lower bound：
 $$
 \log p_{\theta}(x) \ge E_{z\sim q_{\phi}(z|x)}[\log p_{\theta}(x|z)]-D_{KL}(q_{\phi}(z|x),p(z))
 $$
+
+
 Encoder和Decoder的训练目标就是最大化这一下界。
 
 
