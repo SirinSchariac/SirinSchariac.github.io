@@ -14,11 +14,7 @@ tags:
 
 #### 判别模型与生成模型
 
-| Component | Supervised Learning                                          | Unsupervised Learning                                        |
-| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Data      | (x: data, y: label)                                          | (x: data)                                                    |
-| Goal      | learn a function to map x->y                                 | learn some hidden structure of the data                      |
-| Examples  | Classification, Object Detection, Regression, Semantic Segmentation | Clustering, Dimensionality Reduction(e.g., PCA), Feature Learning |
+一般来说，从学习概率分布的角度来说，模型可以分为三类。
 
 **判别模型Discriminative Model:** Learn a probability distribution $p(y|x)$
 
@@ -61,11 +57,13 @@ This will maximize the probability of training data (i.e., Maximum Likelihood Es
 Autoregressive models are concrete implements of the general analysis above.
 
 1. Assume $x$ consists of multiple subparts 
+
    $$
    x=(x_1, x_2, \dots,x_T)
    $$
 
 2. Use chain rule to break down $p(x)$
+
    $$
    \begin{align}
    p(x)&=p(x_1,x_2,\dots,x_T)\\
@@ -145,7 +143,9 @@ VAE的架构如图所示：
 先做一步恒等变换:
 $$
 \log p_{\theta}(x)= \log \frac{p_{\theta}(x|z)p(z)}{p_{\theta}(z|x)}=\log \frac{p_{\theta}(x|z)p(z)q_{\phi}(z|x)}{p_{\theta}(z|x)q_{\phi}(z|x)}\\
+
 =E_z[\log p_{\theta}(x|z)]-E_z[\log \frac{q_{\phi}(z|x)}{p(z)}]+E_z[\log \frac{q_{\phi}(z|x)}{p_{\theta}(z|x)}]\\
+
 =E_{z\sim q_{\phi}(z|x)}[\log p_{\theta}(x|z)]-D_{KL}(q_{\phi}(z|x),p(z))+D_{KL}(q_{\phi}(z|x),p_{\theta}(z|x))
 $$
 第一项反映的是图像重建，第二项反映的是先验分布和Encoder采样之间的KL散度，但第三项是没法计算的(之前所说的$p_{\theta}(z|x)$是无法观测的)，因为KL散度一定非负，所以可得Variantional lower bound：
