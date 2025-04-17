@@ -14,13 +14,24 @@ tags:
 
 #### 判别模型与生成模型
 
+| Component | Supervised Learning                                          | Unsupervised Learning                                        |
+| --------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| Data      | (x: data, y: label)                                          | (x: data)                                                    |
+| Goal      | learn a function to map x->y                                 | learn some hidden structure of the data                      |
+| Examples  | Classification, Object Detection, Regression, Semantic Segmentation | Clustering, Dimensionality Reduction(e.g., PCA), Feature Learning |
+
 一般来说，从学习概率分布的角度来说，模型可以分为三类。
 
-**判别模型Discriminative Model:** Learn a probability distribution $p(y|x)$
-
+**判别模型Discriminative Model:** Learn a probability distribution
+$$
+p(y|x)
+$$
 **生成模型Generative Model:** Learn a probability distribution $p(x)$
 
-**条件生成模型Conditional Generative Model:** Learn $p(x|y)$
+**条件生成模型Conditional Generative Model:** Learn conditioned probability given label y
+$$
+p(x|y)
+$$
 
 > Note that probability density function $p(x)$ is normalized
 >
@@ -124,9 +135,13 @@ The encoder compress the input data to extract features which are lower dimentio
 
 从上面可以看到Regular Autoencoder只是学习了如何提取数据的潜在特征以用于下流任务，但这其中没有能用于生成新图像的方式。
 
-首先假设训练数据集$X=\{ x_i \}_{i=1}^N$是从目前未观测到的latent representation $z$来生成的，当模型训练完成后，我们可以从一个人为假设的先验分布$p_{\theta^*}(z)$中去采样新的$z$(e.g., Gaussian)，然后将这个潜在特征输入到一个类decoder的结构中，来计算$p_{\theta^*}(x|z^{(i)})$，从而得到新的数据的概率分布，这一结构就可以用一个神经网络来实现。
+首先假设训练数据$x$是从目前未观测到的latent representation $z$来生成的，当模型训练完成后，我们可以从一个人为假设的先验分布$p_{\theta^*}(z)$中去采样新的$z$(e.g., Gaussian)，然后将这个潜在特征输入到一个类decoder的结构中，来计算
+$$
+p_{\theta^*}(x|z^{(i)})
+$$
+从而得到新的数据的概率分布，这一结构就可以用一个神经网络来实现。
 
-具体来说，相应的模型是通过输入潜在特征$z$，然后预测一个高维的高斯分布去表示上述概率分布，高斯分布的维度即图像中的像素数量，均值$\mu_{x|z}$表示每个像素的均值，方差$\Sigma_{x|z}$表示的是每个像素上的协方差。
+具体来说，相应的模型是通过输入潜在特征$z$，然后预测一个高维的高斯分布去表示上述概率分布，高斯分布的维度即图像中的像素数量，均值表示每个像素的均值，协方差表示的是每个像素上的协方差。
 
 **How to train?**
 
@@ -143,9 +158,13 @@ VAE的架构如图所示：
 先做一步恒等变换:
 $$
 \log p_{\theta}(x)= \log \frac{p_{\theta}(x|z)p(z)}{p_{\theta}(z|x)}=\log \frac{p_{\theta}(x|z)p(z)q_{\phi}(z|x)}{p_{\theta}(z|x)q_{\phi}(z|x)}\\
-
+$$
+然后引入期望来做替换
+$$
 =E_z[\log p_{\theta}(x|z)]-E_z[\log \frac{q_{\phi}(z|x)}{p(z)}]+E_z[\log \frac{q_{\phi}(z|x)}{p_{\theta}(z|x)}]\\
-
+$$
+再将后面两项替换为KL散度来表达
+$$
 =E_{z\sim q_{\phi}(z|x)}[\log p_{\theta}(x|z)]-D_{KL}(q_{\phi}(z|x),p(z))+D_{KL}(q_{\phi}(z|x),p_{\theta}(z|x))
 $$
 第一项反映的是图像重建，第二项反映的是先验分布和Encoder采样之间的KL散度，但第三项是没法计算的(之前所说的$p_{\theta}(z|x)$是无法观测的)，因为KL散度一定非负，所以可得Variantional lower bound：
