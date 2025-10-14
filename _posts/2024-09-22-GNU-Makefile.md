@@ -4,7 +4,7 @@ title: 		GNU Makefile
 subtitle:	make and cmake
 date:       2024-12-07 				
 author:     Sirin 						
-header-img: img/train.jpg
+header-img: img/view.jpg
 catalog: 	true 				
 tags:						
     - Makefile

@@ -4,7 +4,7 @@ title: 		Golang Sclices
 subtitle:	append slices的细节
 date:       2025-09-28 				
 author:     Sirin 						
-header-img: img/train.jpg
+header-img: img/view.jpg
 catalog: 	true 				
 tags:						
     - Go

@@ -4,7 +4,7 @@ title: 		Vim Editor
 subtitle:	from missing semester(MIT)
 date:       2024-10-9 				
 author:     Sirin 						
-header-img: img/universe.jpg
+header-img: img/view.jpg
 catalog: 	true 				
 tags:						
     - Vim
