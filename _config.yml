@@ -11,8 +11,8 @@ github_repo: "https://github.com/sirinschariac/sirinschariac.github.io.git" # yo
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "What makes a man?"
-sidebar-avatar: /img/Dandelion.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-about-description: "It's always in my heart"
+sidebar-avatar: /img/Daisy.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
